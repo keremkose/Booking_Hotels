@@ -6,8 +6,8 @@ from app.database import engine
 app = FastAPI()
 
 app.include_router(user_controller.router)
+app.include_router(hotel_controller.router)
 # app.include_router(booking_controller)
-# app.include_router(hotel_controller)
 # app.include_router(hotel_rating_controller)
 # app.include_router(room_controller)
 # app.include_router(user_rating_controller)
