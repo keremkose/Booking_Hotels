@@ -21,7 +21,7 @@ class HotelModel(Base):
     hotel_name=Column(String)
     description=Column(String)
     adress=Column(String,unique=True)
-    user_id=Column(Integer,ForeignKey("Users.id"))
+    user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
     hotel_rating=relationship("HotelRatingModel",back_populates="hotel")
     room=relationship("RoomModel",back_populates="hotel")
     user=relationship("UserModel",back_populates="hotel")
@@ -31,8 +31,8 @@ class HotelRatingModel(Base):
     id=Column(Integer,primary_key=True,index=True)
     rating=Column(Integer)
     review=Column(String)
-    user_id=Column(Integer,ForeignKey("Users.id"))
-    hotel_id=Column(Integer,ForeignKey("Hotels.id"))
+    user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
+    hotel_id=Column(Integer,ForeignKey("Hotels.id",ondelete="RESTRICT"),nullable=False)
     user=relationship("UserModel",back_populates="hotel_rating")
     hotel=relationship("HotelModel",back_populates="hotel_rating")
 
@@ -42,15 +42,15 @@ class BookingModel(Base):
     checkin_date=Column(Date)
     checkout_date=Column(Date)
     booking_status=Column(Boolean)
-    user_id=Column(Integer,ForeignKey("Users.id"))
+    user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
     user=relationship("UserModel",back_populates="booking")
     booking_line=relationship("BookingLineModel",back_populates="booking")
 
 class BookingLineModel(Base):
     __tablename__="BookingLinesModel"
     id=Column(Integer,primary_key=True,index=True)
-    room_id=Column(Integer,ForeignKey("Rooms.id"))
-    booking_id=Column(Integer,ForeignKey("Bookings.id"))
+    room_id=Column(Integer,ForeignKey("Rooms.id",ondelete="RESTRICT"),nullable=False)
+    booking_id=Column(Integer,ForeignKey("Bookings.id",ondelete="RESTRICT"),nullable=False)
     booking=relationship("BookingModel",back_populates="booking_line")
     room=relationship("RoomModel",back_populates="booking_line")
 
@@ -62,6 +62,6 @@ class RoomModel(Base):
     bed_count=Column(Integer)
     # bed_size=Column(Integer)
     price_per_night=Column(Integer)
-    hotel_id=Column(Integer,ForeignKey("Hotels.id"))
+    hotel_id=Column(Integer,ForeignKey("Hotels.id",ondelete="RESTRICT"),nullable=False)
     hotel=relationship("HotelModel",back_populates="room")
     booking_line=relationship("BookingLineModel",back_populates="room")
