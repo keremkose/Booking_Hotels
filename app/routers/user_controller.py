@@ -1,10 +1,12 @@
 from fastapi import APIRouter,Depends,Body,Header,Cookie,Form,Response,Request
-from app.schemas.schemas import UserBase
+from app.schemas.schemas import UserBase,UserDisplay
 from app.database import get_db
 from sqlalchemy.orm.session import Session
 from app.database_services import user_database_service
 from typing import Optional,List
 from fastapi.responses import HTMLResponse
+from app.auth.oauth2 import oauth2_scheme
+from app.auth.oauth2 import get_current_user
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -14,8 +16,11 @@ def create_user(user: UserBase=Body(),db:Session=Depends(get_db)):
     user_database_service.create_user(user,db)
 
 @router.get("")
-def get_all_users(db:Session=Depends(get_db)):
-   return user_database_service.get_all_users(db)
+def get_all_users(db:Session=Depends(get_db),user:UserDisplay=Depends(get_current_user)):
+   return {
+   "users":user_database_service.get_all_users(db),
+   "user":user
+   }
 
 @router.delete("/{id}")
 def delete_user_by_id(id:int,db:Session=Depends(get_db)):

@@ -5,8 +5,11 @@ from app.database import engine
 from app.exceptions.user_exceptions import *
 from app.services.exception_handler_service import user_not_found_handler
 from fastapi.middleware.cors import CORSMiddleware
+from app.auth import authentication_controller
+
 app = FastAPI()
 
+app.include_router(authentication_controller.router)
 app.include_router(user_controller.router)
 app.include_router(hotel_controller.router)
 app.include_router(booking_controller.router)
@@ -30,3 +33,4 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
+
