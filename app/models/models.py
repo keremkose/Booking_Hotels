@@ -1,5 +1,5 @@
 from sqlalchemy import  Column,ForeignKey,Table
-from app.database import Base,engine
+from app.services.database_service import Base,engine
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql.sqltypes import String,Integer,Boolean,Date
 

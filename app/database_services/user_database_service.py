@@ -23,6 +23,9 @@ def create_user(user_schema:UserBase,db:Session):
 def get_all_users(db:Session):
    return db.query(UserModel).all()
 
+def get_user_by_userid(id:str,db:Session):
+   return db.query(UserModel).filter(UserModel.id==id).first()
+
 def delete_user_by_id(id:int,db:Session):  
    try:
       db_user=db.query(UserModel).filter(UserModel.id==id).first()

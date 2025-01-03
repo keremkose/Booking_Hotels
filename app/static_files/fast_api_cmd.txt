@@ -1,0 +1,11 @@
+C:\Users\kerem\OneDrive\Masaüstü\pythonapi>py -m venv api_venv
+
+C:\Users\kerem\OneDrive\Masaüstü\pythonapi>api_venv\Scripts\activate.bat
+
+pip install fastapi
+
+pip install uvicorn
+
+uvicorn name of the folder where fasapi in : the name you named instance of fastapi --reload (Cmd promt to serve fasapi and with a reload flag)
+
+pip install -r libraries.txt
