@@ -5,7 +5,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from jose import jwt
 from jose.exceptions import JWTError
-from app.database import get_db 
+from app.services.database_service import get_db 
 from app.database_services import user_database_service 
 
 
@@ -33,12 +33,12 @@ def get_current_user(token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)
     )
   try:
     payload=jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
-    username:str=payload.get("sub")
-    if username is None:
+    id:str=payload.get("sub")
+    if id is None:
       raise credential_exception
   except JWTError:
     raise credential_exception
-  user=user_database_service.get_user_by_username(username,db)
+  user=user_database_service.get_user_by_userid(id,db)
   if user is None:
     raise credential_exception
   return user

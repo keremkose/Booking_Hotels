@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Body,Depends
 from sqlalchemy.orm.session import Session
-from app.database import get_db
+from app.services.database_service import get_db
 from app.schemas.schemas import HotelBase
 from app.database_services import hotel_database_service
 

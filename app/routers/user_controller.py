@@ -1,12 +1,12 @@
 from fastapi import APIRouter,Depends,Body,Header,Cookie,Form,Response,Request
 from app.schemas.schemas import UserBase,UserDisplay
-from app.database import get_db
+from app.services.database_service import get_db
 from sqlalchemy.orm.session import Session
 from app.database_services import user_database_service
 from typing import Optional,List
 from fastapi.responses import HTMLResponse
-from app.auth.oauth2 import oauth2_scheme
-from app.auth.oauth2 import get_current_user
+from app.services.oauth2_service import oauth2_scheme
+from app.services.oauth2_service import get_current_user
 
 router = APIRouter(prefix="/user", tags=["user"])
 
@@ -22,10 +22,16 @@ def get_all_users(db:Session=Depends(get_db),user:UserDisplay=Depends(get_curren
    "user":user
    }
 
+@router.get("/{id}")
+def get_all_users(db:Session=Depends(get_db)):
+   return user_database_service.get_user_by_userid(db)
+
 @router.delete("/{id}")
 def delete_user_by_id(id:int,db:Session=Depends(get_db)):
    return user_database_service.delete_user_by_id(id,db)
 
+
+#TODO Delete below. PRACTICES
 @router.get("/custom_response/{st}")
 def custom_response(st:str):
    obj=f"""
