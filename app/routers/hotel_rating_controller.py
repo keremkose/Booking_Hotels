@@ -1,3 +1,3 @@
 from fastapi import APIRouter
 
-router=APIRouter(prefix="/hotel_rating",tags=["hotel_rating"]) 
+router=APIRouter(prefix="/hotel_ratings",tags=["hotel_rating"]) 

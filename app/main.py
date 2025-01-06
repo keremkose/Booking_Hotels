@@ -8,13 +8,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import authentication_controller
 from fastapi.staticfiles import StaticFiles
 from app.routers import test_controller 
+from app.template import templates
 
 app = FastAPI()
 
+#authentication
 app.include_router(authentication_controller.router)
-
+#file
 app.include_router(file_controller.router)
-
+#template
+app.include_router (templates.router)
+#db controllers
 app.include_router(user_controller.router)
 app.include_router(hotel_controller.router)
 app.include_router(booking_controller.router)
@@ -32,6 +36,7 @@ origins=[
     "http://localhost:3000"
 ]
 
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,
@@ -41,3 +46,7 @@ app.add_middleware(
 )
 
 app.mount("/files",StaticFiles(directory="app/static_files"),name="files")
+app.mount("/template",StaticFiles(directory="app/template"),name="styleget")
+
+def get_app():
+    return app

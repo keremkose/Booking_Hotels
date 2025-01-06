@@ -2,6 +2,15 @@ from pydantic import BaseModel
 from datetime import date
 
 #User Schemas
+
+#Update
+class UserUpdateBase(BaseModel):
+    name:str|None
+    surname:str|None
+    username:str|None
+    password:str|None
+    email:str|None
+
 class UserBase(BaseModel):
     name:str
     surname:str
@@ -94,4 +103,20 @@ class RoomDisplay(BaseModel):
     hotel_id:int
     class Congif():
         from_attribute=True
-          
+
+#UserRating Schemas
+
+class UserRatingBase(BaseModel):
+    manager_user_id:int
+    customer_user_id :int
+    rate:str
+    comment:str
+
+class UserRatingDisplay(BaseModel):
+    id:int
+    manager_user_id:int
+    customer_user_id :int
+    rate:str
+    comment:str
+    class Congif():
+        from_attribute=True
