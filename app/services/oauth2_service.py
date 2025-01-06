@@ -7,11 +7,11 @@ from jose import jwt
 from jose.exceptions import JWTError
 from app.services.database_service import get_db 
 from app.database_services import user_database_service 
-
+from app.config import settings
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
  
-SECRET_KEY = '142A4D41B85D0C5F6C7581EA673DDD3E426777502B86A9CEA80F0692A90B1778'
+SECRET_KEY = settings.secret_key
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
  
@@ -38,7 +38,18 @@ def get_current_user(token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)
       raise credential_exception
   except JWTError:
     raise credential_exception
-  user=user_database_service.get_user_by_userid(id,db)
+  user=user_database_service.get_user_by_id(id,db)
   if user is None:
     raise credential_exception
   return user
+
+# def is_admin(token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)):
+#     credential_exception=HTTPException(
+#     status_code=status.HTTP_401_UNAUTHORIZED,
+#     detail="Couldn't validate credentials",
+#     headers={"WWW-Authenticate":"Bearer"}
+#     )
+    
+#     try: 
+#       payload=jwt.decode(token,SECRET_KEY,algorithms=[ALGORITHM])
+      

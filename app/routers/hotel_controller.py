@@ -3,8 +3,10 @@ from sqlalchemy.orm.session import Session
 from app.services.database_service import get_db
 from app.schemas.schemas import HotelBase
 from app.database_services import hotel_database_service
+from app.schemas.schemas import *
+from typing import List
 
-router=APIRouter(prefix="/hotel",tags=["hotel"]) 
+router=APIRouter(prefix="/hotels",tags=["hotel"]) 
 
 #post
 @router.post("")
@@ -13,7 +15,7 @@ def create_hotel(hotel_schema:HotelBase,db:Session=Depends(get_db)):
     return 1
 
 #get
-@router.get("")
+@router.get("",response_model= List[HotelDisplay])
 def get_all_hotels(db:Session=Depends(get_db)):
     return hotel_database_service.get_all_hotels(db)
 

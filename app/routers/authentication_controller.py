@@ -17,7 +17,7 @@ def get_token(request:OAuth2PasswordRequestForm=Depends(),db:Session = Depends(g
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="Invalid credentials.")
     if not Hash.verify(user.password,request.password):
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Incorrect password.")
-    access_token=oauth2_service.create_access_token(data={"sub":user.id}) 
+    access_token=oauth2_service.create_access_token(data={"sub":str(user.id)}) 
     
     return {
     "access_token":access_token,
