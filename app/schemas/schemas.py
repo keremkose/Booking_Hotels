@@ -34,6 +34,11 @@ class HotelBase(BaseModel):
     adress:str
     user_id:int
 
+class HotelUpdateBase(BaseModel):
+    hotel_name:str|None
+    description:str|None
+    adress:str|None
+    
 class HotelDisplay(BaseModel): 
     id:int
     hotel_name:str

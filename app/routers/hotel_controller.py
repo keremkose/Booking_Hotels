@@ -28,3 +28,9 @@ def get_hotel_by_id(id:int,db:Session=Depends(get_db)):
 def delete_hotel_by_id(id:int,db:Session=Depends(get_db)):
     hotel_database_service.delete_hotel_by_id(id,db)
     return 1
+
+#update
+@router.put
+def update_hotel(hotel_update:HotelUpdateBase,db: Session=Depends(get_db)):
+    hotel_database_service.update_hotel(hotel_update,db)
+    return 1
