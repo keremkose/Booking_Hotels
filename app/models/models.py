@@ -50,10 +50,10 @@ class UserModel(Base):
 class HotelModel(Base):
     __tablename__="Hotels"
     id=Column(Integer,primary_key=True,index=True)
-    hotel_name=Column(String(max_credential_length))
+    hotel_name=Column(String(max_credential_length),unique=True)
     description=Column(String(max_text_length))
-    adress=Column(String(max_text_length),unique=True)
-    user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
+    adress=Column(String(max_text_length))
+    user_id=Column(Integer,ForeignKey("Users.id"),nullable=False)
     
     hotel_rating=relationship("HotelRatingModel",back_populates="hotel")
     room=relationship("RoomModel",back_populates="hotel")
@@ -81,8 +81,8 @@ class HotelRatingModel(Base):
     id=Column(Integer,primary_key=True,index=True)
     rate=Column(Integer)
     review=Column(String(max_text_length))
-    user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
-    hotel_id=Column(Integer,ForeignKey("Hotels.id",ondelete="RESTRICT"),nullable=False)
+    user_id=Column(Integer,ForeignKey("Users.id"),nullable=False)
+    hotel_id=Column(Integer,ForeignKey("Hotels.id"),nullable=False)
     
     user=relationship("UserModel",back_populates="hotel_rating")
     hotel=relationship("HotelModel",back_populates="hotel_rating")
@@ -106,7 +106,7 @@ class BookingModel(Base):
     checkin_date=Column(Date)
     checkout_date=Column(Date)
     booking_status=Column(Boolean)
-    user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
+    user_id=Column(Integer,ForeignKey("Users.id"),nullable=False)
     
     user=relationship("UserModel",back_populates="booking")
     booking_line=relationship("BookingLineModel",back_populates="booking")
@@ -114,8 +114,8 @@ class BookingModel(Base):
 class BookingLineModel(Base):
     __tablename__="BookingLinesModel"
     id=Column(Integer,primary_key=True,index=True)
-    room_id=Column(Integer,ForeignKey("Rooms.id",ondelete="RESTRICT"),nullable=False)
-    booking_id=Column(Integer,ForeignKey("Bookings.id",ondelete="RESTRICT"),nullable=False)
+    room_id=Column(Integer,ForeignKey("Rooms.id"),nullable=False)
+    booking_id=Column(Integer,ForeignKey("Bookings.id"),nullable=False)
     
     booking=relationship("BookingModel",back_populates="booking_line")
     room=relationship("RoomModel",back_populates="booking_line")
@@ -127,7 +127,7 @@ class RoomModel(Base):
     size=Column(Integer)
     bed_count=Column(Integer)
     price_per_night=Column(Integer)
-    hotel_id=Column(Integer,ForeignKey("Hotels.id",ondelete="RESTRICT"),nullable=False)
+    hotel_id=Column(Integer,ForeignKey("Hotels.id"),nullable=False)
     
     hotel=relationship("HotelModel",back_populates="room")
     booking_line=relationship("BookingLineModel",back_populates="room")
@@ -135,8 +135,8 @@ class RoomModel(Base):
 class UserRatingModel(Base):
     __tablename__="UserRatings"
     id=Column(Integer,primary_key=True,index=True)
-    manager_user_id=Column(Integer,ForeignKey("Hotels.id",ondelete="RESTRICT"),nullable=False)
-    customer_user_id=Column(Integer,ForeignKey("Users.id",ondelete="RESTRICT"),nullable=False)
+    manager_user_id=Column(Integer,ForeignKey("Hotels.id"),nullable=False)
+    customer_user_id=Column(Integer,ForeignKey("Users.id"),nullable=False)
     rate=Column(Integer,CheckConstraint('rate BETWEEN 1 AND 5'),) #TODO Adjust it to Enum or ...
     comment=Column(String(max_text_length)) 
     

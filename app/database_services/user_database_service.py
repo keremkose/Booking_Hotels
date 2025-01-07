@@ -5,8 +5,14 @@ from app.database_services.hash import Hash
 from fastapi import HTTPException,status
 from app.exceptions.user_exceptions import UserNotFound
 from fastapi.responses import HTMLResponse
+from fastapi.responses import Response
 
 def create_user(user_schema:UserBase,db:Session):
+   existing_user_email=db.query(UserModel).filter(UserModel.email==user_schema.email).first()
+   existing_user_username=db.query(UserModel).filter(UserModel.username==user_schema.username).first()
+
+   if existing_user_email or existing_user_username is not None:
+      raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
    db_user=UserModel(
     name= user_schema.name,
     surname=user_schema.surname,
@@ -21,13 +27,17 @@ def create_user(user_schema:UserBase,db:Session):
    return db_user
 
 def get_all_users(db:Session):
-   return db.query(UserModel).all()
+   try:
+      return db.query(UserModel).all()
+   except:
+      raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
+   
 
 def get_user_by_id(id:str,db:Session):
    return db.query(UserModel).filter(UserModel.id==id).first()
 
+#TODO delete it 
 def admin_delete_user_by_id(id:int,db:Session):
-   #TODO should be looked at and arranged
    try:
       hotels= db.query(HotelModel).filter(HotelModel.user_id==id)
       if hotels is not None:
@@ -47,12 +57,9 @@ def admin_delete_user_by_id(id:int,db:Session):
 def delete_user_by_id(user:UserModel,db:Session):  
   db.query(UserModel).filter(UserModel.id==user.id).filter().delete(user)
   db.commit()
-  return 1
-  
 
-def update_user_by_id(user_update: UserUpdateBase, db: Session):
-   db_user = db.query(UserModel).filter(UserModel.email == user_update.email).first()
-
+def update_user_by_id(user:UserModel,user_update: UserUpdateBase, db: Session):
+   db_user = db.query(UserModel).filter(UserModel.id == user.id).first()
    if db_user:
       for field, value in user_update.dict(exclude_unset=True).items():
          if field =='password' and value is not None:
@@ -62,7 +69,6 @@ def update_user_by_id(user_update: UserUpdateBase, db: Session):
          
       db.commit()  
       db.refresh(db_user)  
-
       return db_user
    else:
-      raise ValueError(f"User with username {user_update.username} not found")
+      raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail=f"User with username {user_update.username} not found")
