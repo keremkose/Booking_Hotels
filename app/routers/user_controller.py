@@ -26,7 +26,7 @@ def get_user_by_id(id:int,db:Session=Depends(get_db)):
 
 #TODO delete it
 @router.delete("/{id}")
-def admin_delete_user_by_id(id:int,db:Session=Depends(get_db)):
+def admin_delete_user_by_id(id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
    user_database_service.admin_delete_user_by_id(id,db)
 
 @router.delete("")

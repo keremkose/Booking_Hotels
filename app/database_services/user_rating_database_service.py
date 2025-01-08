@@ -5,7 +5,6 @@ from fastapi import HTTPException,status
 from typing import List
 from app.models.models import *
 from fastapi import Depends
-from sqlalchemy import and_
 
 def create_hotel(current_user_id:int,hotel_schema:HotelBase,db:Session):    
     existing_hotel=db.query(HotelModel).filter(HotelModel.hotel_name==hotel_schema.hotel_name).first()
@@ -41,8 +40,8 @@ def get_my_all_hotels(user:UserModel,db:Session):
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_hotel_by_id(id:int,db:Session,user:UserModel):    
-    hotel=db.query(HotelModel).filter(and_(HotelModel.id==id,HotelModel.user_id==user.id)).first()
+def get_hotel_by_id(id:int,db:Session):    
+    hotel=db.query(HotelModel).filter(HotelModel.id==id).first()
     if hotel is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="No such an object")
     return hotel
@@ -70,6 +69,5 @@ def update_hotel(hotel_update:HotelUpdateBase,db: Session,user:UserModel):
             setattr(db_hotel,field,value)
         db.commit()
         db.refresh(db_hotel)
-        return db_hotel
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)

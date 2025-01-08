@@ -37,7 +37,9 @@ def get_user_by_id(id:str,db:Session):
    return db.query(UserModel).filter(UserModel.id==id).first()
 
 #TODO delete it 
-def admin_delete_user_by_id(id:int,db:Session):
+def admin_delete_user_by_id(id:int,db:Session,user:UserModel):
+   if user.is_admin is False:
+      raise HTTPException(status.HTTP_401_UNAUTHORIZED)
    try:
       hotels= db.query(HotelModel).filter(HotelModel.user_id==id)
       if hotels is not None:
