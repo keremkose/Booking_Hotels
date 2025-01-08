@@ -5,6 +5,7 @@ from fastapi import HTTPException,status
 from typing import List
 from app.models.models import *
 from fastapi import Depends
+from sqlalchemy import and_
 
 def create_booking_line(booking_schema:BookingLineBase,db:Session):    
    
@@ -33,8 +34,8 @@ def get_my_all_booking_lines(user:UserModel,db:Session):
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_booking_line_by_id(id:int,db:Session):    
-    booking=db.query(BookingLineModel).filter(BookingLineModel.id==id).first()
+def get_booking_line_by_id(id:int,db:Session,user:UserModel):    
+    booking=db.query(BookingLineModel).join(BookingModel,BookingLineModel.booking_id==BookingModel.id).filter(and_(BookingLineModel.id==id,BookingModel.user_id==user.id)).first()
     if booking is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="No such an object")
     return booking
@@ -46,19 +47,8 @@ def delete_booking_line_by_id(id:int,db:Session,user:UserModel):
     try:
         db.delete(existing_booking_line)
         db.commit()
+        db.refresh(existing_booking_line)
+        return existing_booking_line
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
     
-def update_booking_line(booking_update:BookingUpdateBase,db: Session,user:UserModel):
-    db_booking=db.query(BookingLineModel).filter(BookingLineModel.id==booking_update.id).first()
-    if db_booking is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="There is no such an object.")
-    if user.id != db_booking.user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You are not authorized to delete this booking.")
-    try:
-        for field, value in booking_update.dict(exclude_unset=True).items():
-            setattr(db_booking,field,value)
-        db.commit()
-        db.refresh(db_booking)
-    except:
-        raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)

@@ -49,15 +49,23 @@ class HotelDisplay(BaseModel):
 
 #HotelRating Schemas
 class HotelRatingBase(BaseModel):
-    rating:int
+    rate:int
     review:str
     user_id:int
     hotel_id:int
 
+class HotelRatingUpdateBase(BaseModel):
+    id:int
+    rate:int|None
+    review:str|None
+    user_id:int|None
+    hotel_id:int|None
+
 class HotelRatingDisplay(BaseModel): 
     id:int
-    rating:int
+    rate:int
     review:str
+    hotel_id:int
     class Congif():
         from_attribute=True
 
@@ -68,9 +76,9 @@ class BookingBase(BaseModel):
     booking_status:bool
 
 class BookingUpdateBase(BaseModel):
-    checkin_date:date           #ask to jurgen
-    checkout_date:date
-    booking_status:bool
+    checkin_date:date|None           #ask to jurgen
+    checkout_date:date|None
+    booking_status:bool|None
     id:int
 
 class BookingDisplay(BaseModel): #ask to jurgen
@@ -89,8 +97,8 @@ class BookingLineBase(BaseModel):
 
 class BookingLineUpdateBase(BaseModel):
     id:int
-    booking_id:int
-    room_id:int
+    booking_id:int|None
+    room_id:int|None
 
 class BookingLineDisplay(BaseModel): 
     id:int
@@ -104,16 +112,21 @@ class RoomBase(BaseModel):
     room_number:int
     size:int
     bed_count:int
-    # bed_size:int
     price_per_night:int
     hotel_id:int
+
+class RoomUpdateBase(BaseModel):
+    id:int
+    room_number:int |None
+    size:int|None
+    bed_count:int|None
+    price_per_night:int|None
 
 class RoomDisplay(BaseModel): 
     id:int
     room_number:int
     size:int
     bed_count:int
-    # bed_size:int
     price_per_night:int
     hotel_id:int
     class Congif():

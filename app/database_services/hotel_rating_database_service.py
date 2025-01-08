@@ -1,73 +1,68 @@
 from sqlalchemy.orm import Session
-from app.models.models import HotelModel
 from app.schemas.schemas import *
 from fastapi import HTTPException,status
 from typing import List
 from app.models.models import *
 from fastapi import Depends
+from sqlalchemy import and_
 
-def create_hotel(current_user_id:int,hotel_schema:HotelBase,db:Session):    
-    existing_hotel=db.query(HotelModel).filter(HotelModel.hotel_name==hotel_schema.hotel_name).first()
-
-    if existing_hotel is not None:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Hotel with this name already exists.")
+def create_hotel_rating(current_user:UserModel,hotel_rating_schema:HotelRatingBase,db:Session):    
+    existing_hotel_rating=db.query(HotelRatingModel).join(HotelModel,HotelRatingModel.hotel_id==HotelModel.id).first()
+    if existing_hotel_rating is not None:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,detail="Hotel rating with this name already exists.")
     
-    db_hotel=HotelModel(
-    hotel_name=hotel_schema.hotel_name,
-    description=hotel_schema.description,
-    adress=hotel_schema.adress,
-    user_id=current_user_id
+    db_hotel_rating=HotelRatingModel(
+    rate=hotel_rating_schema.rate,
+    review=hotel_rating_schema.review,
+    hotel_id=hotel_rating_schema.user_id,
+    user_id=current_user.id
     )
  
     try:
-        db.add(db_hotel)
+        db.add(db_hotel_rating)
         db.commit()
-        new_hotel=db.query(HotelModel).filter(HotelModel.hotel_name==hotel_schema.hotel_name).first()
-        db.refresh(db_hotel)
-        return new_hotel
+        db.refresh(db_hotel_rating)
+        return db_hotel_rating
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_all_hotels(db:Session)-> List[HotelModel]:       
+def get_all_hotel_ratings(db:Session)-> List[HotelRatingModel]:       
     try:
-       return db.query(HotelModel).all()
+       return db.query(HotelRatingModel).all()
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_my_all_hotels(user:UserModel,db:Session):
+def get_my_all_hotel_ratings(user:UserModel,db:Session,hotel_id:int):
     try:
-        return db.query(HotelModel).filter(HotelModel.user_id==user.id).all()
+        return db.query(HotelRatingModel).filter(and_(HotelRatingModel.user_id==user.id,HotelRatingModel.hotel_id==hotel_id)).all()
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_hotel_by_id(id:int,db:Session):    
-    hotel=db.query(HotelModel).filter(HotelModel.id==id).first()
-    if hotel is None:
+def get_hotel_rating_by_id(id:int,db:Session,user:UserModel):    
+    hotel_rating=db.query(HotelRatingModel).filter(and_(HotelRatingModel.id==id,HotelRatingModel.user_id==user.id)).first()
+    if hotel_rating is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="No such an object")
-    return hotel
+    return hotel_rating
 
-def delete_hotel_by_id(id:int,db:Session,user:UserModel):  
-    db_hotel=db.query(HotelModel).filter(HotelModel.id==id).first()
-    if db_hotel is None:
+def delete_hotel_rating_by_id(id:int,db:Session,user:UserModel):  
+    db_hotel_rating=db.query(HotelRatingModel).filter(and_(HotelRatingModel.id==id,HotelRatingModel.user_id==user.id)).first()
+    if db_hotel_rating is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="There is no such an object.")
-    if user.id != db_hotel.user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You are not authorized to delete this hotel.")
     try:
-        db.delete(db_hotel)
+        db.delete(db_hotel_rating)
         db.commit()
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
     
-def update_hotel(hotel_update:HotelUpdateBase,db: Session,user:UserModel):
-    db_hotel=db.query(HotelModel).filter(HotelModel.id==hotel_update.id).first()
-    if db_hotel is None:
+def update_hotel_rating(hotel_rating_update:HotelRatingUpdateBase,db: Session,user:UserModel):
+    db_hotel_rating=db.query(HotelRatingModel).filter(and_(HotelRatingModel.id==hotel_rating_update.id,HotelRatingModel.user_id==user.id)).first()
+    if db_hotel_rating is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="There is no such an object.")
-    if user.id != db_hotel.user_id:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You are not authorized to delete this hotel.")
     try:
-        for field, value in hotel_update.dict(exclude_unset=True).items():
-            setattr(db_hotel,field,value)
+        for field, value in hotel_rating_update.dict(exclude_unset=True).items():
+            setattr(db_hotel_rating,field,value)
         db.commit()
-        db.refresh(db_hotel)
+        db.refresh(db_hotel_rating)
+        return db_hotel_rating
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)

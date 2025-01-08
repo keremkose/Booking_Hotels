@@ -16,6 +16,7 @@ class UserModel(Base):
     username=Column(String(max_credential_length),unique=True)
     email=Column(String,unique=True) 
     password=Column(String)
+    is_admin=Column(Boolean(False))
     
     hotel_rating=relationship("HotelRatingModel",back_populates="user")
     booking=relationship("BookingModel",back_populates="user")
@@ -123,7 +124,7 @@ class BookingLineModel(Base):
 class RoomModel(Base):
     __tablename__="Rooms"
     id=Column(Integer,primary_key=True,index=True)
-    room_number=Column(Integer)
+    room_number=Column(Integer,unique=True)
     size=Column(Integer)
     bed_count=Column(Integer)
     price_per_night=Column(Integer)

@@ -24,16 +24,10 @@ def get_my_all_booking_lines(db:Session=Depends(get_db),user:BookingLineModel=De
     return booking_line_database_service.get_my_all_booking_lines(user,db)
 
 @router.get("/{id}")
-def get_booking_line_by_id(id:int,db:Session=Depends(get_db)):
-   return booking_line_database_service.get_booking_line_by_id(id,db)
+def get_booking_line_by_id(id:int,db:Session=Depends(get_db),user:BookingLineModel=Depends(get_current_user)):
+   return booking_line_database_service.get_booking_line_by_id(id,db,user)
     
 #delete
-@router.delete("/{id}")
+@router.delete("/{id}",response_model=BookingLineDisplay)
 def delete_booking_line_by_id(id:int,db:Session=Depends(get_db),user=Depends(get_current_user)):
     booking_line_database_service.delete_booking_line_by_id(id,db,user)
-
-#update
-@router.put("")
-def update_booking_line(booking_line_update:BookingLineUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
-    return booking_line_database_service.update_booking_line(booking_line_update,db,user)
-     

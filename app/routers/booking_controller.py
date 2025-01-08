@@ -25,8 +25,8 @@ def get_my_all_bookings(db:Session=Depends(get_db),user:BookingModel=Depends(get
     return booking_database_service.get_my_all_bookings(user,db)
 
 @router.get("/{id}")
-def get_bookings_by_id(id:int,db:Session=Depends(get_db)):
-   return booking_database_service.get_booking_by_id(id,db)
+def get_booking_by_id(id:int,db:Session=Depends(get_db),user:BookingModel=Depends(get_current_user)):
+   return booking_database_service.get_booking_by_id(id,db,user)
     
 #delete
 @router.delete("/{id}")
@@ -34,7 +34,7 @@ def delete_bookings_by_id(id:int,db:Session=Depends(get_db),user=Depends(get_cur
     booking_database_service.delete_booking_by_id(id,db,user)
 
 #update
-@router.put("")
+@router.put("",response_model=BookingDisplay)
 def update_bookings(booking_update:BookingUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
     return booking_database_service.update_booking(booking_update,db,user)
      

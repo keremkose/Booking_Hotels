@@ -5,8 +5,7 @@ router=APIRouter(prefix="/rooms",tags=["room"])
 from fastapi import APIRouter,Body,Depends
 from sqlalchemy.orm.session import Session
 from app.services.database_service import get_db
-from app.schemas.schemas import HotelBase
-from app.database_services import hotel_database_service
+from app.database_services import room_database_service
 from app.schemas.schemas import *
 from typing import List
 from app.models.models import *
@@ -16,30 +15,30 @@ from app.services.oauth2_service import get_current_user
 router=APIRouter(prefix="/room_models",tags=["room_models"]) 
 
 #post
-@router.post("",response_model=HotelDisplay)
-def create_hotel(hotel_schema:HotelBase,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
-    return hotel_database_service.create_hotel(user.id,hotel_schema,db)
+@router.post("",response_model=RoomDisplay)
+def create_room(room_schema:RoomBase,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+    return room_database_service.create_room(user.id,room_schema,db)
      
 #get
-@router.get("",response_model= List[HotelDisplay])
-def get_all_hotels(db:Session=Depends(get_db)):
-    return hotel_database_service.get_all_hotels(db)
+@router.get("",response_model= List[RoomDisplay])
+def get_all_rooms(db:Session=Depends(get_db)):
+    return room_database_service.get_all_rooms(db)
 
-@router.get("",response_model= List[HotelDisplay])
-def get_my_all_hotels(db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
-    return hotel_database_service.get_my_all_hotels(user,db)
+@router.get("/{hotel_id}",response_model= List[RoomDisplay])
+def get_my_all_rooms(hotel_id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+    return room_database_service.get_my_all_rooms(user,db,hotel_id)
 
-@router.get("/{id}")
-def get_hotel_by_id(id:int,db:Session=Depends(get_db)):
-   return hotel_database_service.get_hotel_by_id(id,db)
+@router.get("/{hotel_id}/{room_number}")
+def get_room_by_room_number_and_hotel_id(hotel_id:int,room_number:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+   return room_database_service.get_room_by_room_number_and_hotel_id(hotel_id,room_number,db,user)
     
 #delete
-@router.delete("/{id}")
-def delete_hotel_by_id(id:int,db:Session=Depends(get_db),user=Depends(get_current_user)):
-    hotel_database_service.delete_hotel_by_id(id,db,user)
+@router.delete("/{hotel_id}/{id}")
+def delete_room_by_id(hotel_id:int,room_number:int,db:Session=Depends(get_db),user=Depends(get_current_user)):
+    room_database_service.delete_room_by_id(hotel_id,room_number,db,user)
 
 #update
-@router.put("")
-def update_hotel(hotel_update:HotelUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
-    return hotel_database_service.update_hotel(hotel_update,db,user)
+@router.put("",response_model=RoomDisplay)
+def update_room(room_update:RoomUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
+    return room_database_service.update_room(room_update,db,user)
      

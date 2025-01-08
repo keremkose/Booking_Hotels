@@ -26,8 +26,8 @@ def get_my_all_hotels(db:Session=Depends(get_db),user:UserModel=Depends(get_curr
     return hotel_database_service.get_my_all_hotels(user,db)
 
 @router.get("/{id}")
-def get_hotel_by_id(id:int,db:Session=Depends(get_db)):
-   return hotel_database_service.get_hotel_by_id(id,db)
+def get_hotel_by_id(id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+   return hotel_database_service.get_hotel_by_id(id,db,user)
     
 #delete
 @router.delete("/{id}")
@@ -35,7 +35,7 @@ def delete_hotel_by_id(id:int,db:Session=Depends(get_db),user=Depends(get_curren
     hotel_database_service.delete_hotel_by_id(id,db,user)
 
 #update
-@router.put("")
+@router.put("",response_model=HotelDisplay)
 def update_hotel(hotel_update:HotelUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
     return hotel_database_service.update_hotel(hotel_update,db,user)
      

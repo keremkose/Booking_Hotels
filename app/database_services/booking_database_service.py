@@ -5,6 +5,7 @@ from fastapi import HTTPException,status
 from typing import List
 from app.models.models import *
 from fastapi import Depends
+from sqlalchemy import and_
 
 def create_booking(current_user_id:int,booking_schema:BookingBase,db:Session):    
 
@@ -35,8 +36,8 @@ def get_my_all_bookings(user:UserModel,db:Session):
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_booking_by_id(id:int,db:Session):    
-    booking=db.query(BookingModel).filter(BookingModel.id==id).first()
+def get_booking_by_id(id:int,db:Session,user:UserModel):    
+    booking=db.query(BookingModel).filter(and_(BookingModel.id==id ,BookingModel.user_id==user.id)).first()
     if booking is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="No such an object")
     return booking
@@ -64,5 +65,6 @@ def update_booking(booking_update:BookingUpdateBase,db: Session,user:UserModel):
             setattr(db_booking,field,value)
         db.commit()
         db.refresh(db_booking)
+        return db_booking
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
