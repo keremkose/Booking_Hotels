@@ -66,19 +66,29 @@ class BookingBase(BaseModel):
     checkin_date:date           #ask to jurgen
     checkout_date:date
     booking_status:bool
-    user_id:int
+
+class BookingUpdateBase(BaseModel):
+    checkin_date:date           #ask to jurgen
+    checkout_date:date
+    booking_status:bool
+    id:int
 
 class BookingDisplay(BaseModel): #ask to jurgen
     id:int
     checkin_date:date
     checkout_date:date
     booking_status:bool
-    user_id:int
+    user_id:int #TODO
     class Congif():
         from_attribute=True
 
 #BookingLine Schemas
 class BookingLineBase(BaseModel):
+    booking_id:int
+    room_id:int
+
+class BookingLineUpdateBase(BaseModel):
+    id:int
     booking_id:int
     room_id:int
 
