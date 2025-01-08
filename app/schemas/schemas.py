@@ -73,7 +73,6 @@ class HotelRatingDisplay(BaseModel):
 class BookingBase(BaseModel):
     checkin_date:date           #ask to jurgen
     checkout_date:date
-    booking_status:bool
 
 class BookingUpdateBase(BaseModel):
     checkin_date:date|None           #ask to jurgen

@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import authentication_controller
 from fastapi.staticfiles import StaticFiles
 from app.template import templates
-
+from app.middlewares.admin_addition_middleware import FirstUserAdminMiddleware
 app = FastAPI()
 
 #authentication
@@ -42,7 +42,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"]
 )
-
+app.add_middleware(FirstUserAdminMiddleware)
 app.mount("/files",StaticFiles(directory="app/static_files"),name="files")
 app.mount("/template",StaticFiles(directory="app/template"),name="styleget")
 
