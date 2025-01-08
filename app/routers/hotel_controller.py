@@ -25,6 +25,10 @@ def get_all_hotels(db:Session=Depends(get_db)):
 def get_my_all_hotels(db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
     return hotel_database_service.get_my_all_hotels(user,db)
 
+@router.get("/with_reviews")
+def get_hotels_with_reviews(db:Session=Depends(get_db)):
+ return hotel_database_service.get_my_all_hotels(db)
+
 @router.get("/{id}")
 def get_hotel_by_id(id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
    return hotel_database_service.get_hotel_by_id(id,db,user)

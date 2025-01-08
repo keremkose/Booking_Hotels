@@ -16,9 +16,9 @@ def create_booking(booking_schema:BookingBase,db:Session=Depends(get_db),user:Bo
     return booking_database_service.create_booking(user.id,booking_schema,db)
      
 #get
-@router.get("",response_model= List[BookingDisplay])
-def get_all_bookings(db:Session=Depends(get_db)):
-    return booking_database_service.get_all_bookings(db)
+@router.get("/admin",response_model= List[BookingDisplay])
+def get_all_bookings(db:Session=Depends(get_db),user:BookingModel=Depends(get_current_user)):
+    return booking_database_service.get_all_bookings(user,db)
 
 @router.get("",response_model= List[BookingDisplay])
 def get_my_all_bookings(db:Session=Depends(get_db),user:BookingModel=Depends(get_current_user)):

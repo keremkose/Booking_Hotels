@@ -41,6 +41,12 @@ def get_my_all_hotels(user:UserModel,db:Session):
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
+def get_my_all_hotels(db: Session):
+    List[HotelModel]=db.query(HotelModel).all()
+    return {"Hotel":{
+        
+    }}
+
 def get_hotel_by_id(id:int,db:Session,user:UserModel):    
     hotel=db.query(HotelModel).filter(and_(HotelModel.id==id,HotelModel.user_id==user.id)).first()
     if hotel is None:

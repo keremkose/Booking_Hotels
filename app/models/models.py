@@ -16,7 +16,7 @@ class UserModel(Base):
     username=Column(String(max_credential_length),unique=True)
     email=Column(String,unique=True) 
     password=Column(String)
-    is_admin=Column(Boolean(False))
+    is_admin=Column(Boolean, default=False)
     
     hotel_rating=relationship("HotelRatingModel",back_populates="user")
     booking=relationship("BookingModel",back_populates="user")

@@ -1,8 +1,7 @@
 from fastapi import APIRouter,Body,Depends
 from sqlalchemy.orm.session import Session
 from app.services.database_service import get_db
-from app.schemas.schemas import HotelBase
-from app.database_services import hotel_database_service
+from app.database_services import user_rating_database_service
 from app.schemas.schemas import *
 from typing import List
 from app.models.models import *
@@ -12,30 +11,30 @@ from app.services.oauth2_service import get_current_user
 router=APIRouter(prefix="/user_ratings",tags=["user_rating"]) 
 
 #post
-@router.post("",response_model=HotelDisplay)
-def create_hotel(hotel_schema:HotelBase,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
-    return hotel_database_service.create_hotel(user.id,hotel_schema,db)
+@router.post("",response_model=UserRatingDisplay)
+def create_user_rating(user_rating_schema:UserRatingBase,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+    return user_rating_database_service.create_user_rating(user,user_rating_schema,db)
      
 #get
-@router.get("",response_model= List[HotelDisplay])
-def get_all_hotels(db:Session=Depends(get_db)):
-    return hotel_database_service.get_all_hotels(db)
+@router.get("",response_model= List[UserRatingDisplay])
+def get_all_user_ratings(db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+    return user_rating_database_service.get_all_user_ratings(db,user)
 
-@router.get("",response_model= List[HotelDisplay])
-def get_my_all_hotels(db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
-    return hotel_database_service.get_my_all_hotels(user,db)
+@router.get("",response_model= List[UserRatingDisplay])
+def get_my_all_user_ratings(db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+    return user_rating_database_service.get_my_all_user_ratings(user,db)
 
 @router.get("/{id}")
-def get_hotel_by_id(id:int,db:Session=Depends(get_db)):
-   return hotel_database_service.get_hotel_by_id(id,db)
+def get_user_rating_by_id(id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+   return user_rating_database_service.get_user_rating_by_id(id,db)
     
 #delete
 @router.delete("/{id}")
-def delete_hotel_by_id(id:int,db:Session=Depends(get_db),user=Depends(get_current_user)):
-    hotel_database_service.delete_hotel_by_id(id,db,user)
+def delete_user_rating_by_id(id:int,db:Session=Depends(get_db),user=Depends(get_current_user)):
+    user_rating_database_service.delete_user_rating_by_id(id,db,user)
 
 #update
 @router.put("")
-def update_hotel(hotel_update:HotelUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
-    return hotel_database_service.update_hotel(hotel_update,db,user)
+def update_user_rating(user_rating_update:UserRatingUpdateBase=Body(),db: Session=Depends(get_db),user=Depends(get_current_user)):
+    return user_rating_database_service.update_user_rating(user_rating_update,db,user)
      

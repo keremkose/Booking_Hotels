@@ -8,6 +8,9 @@ from fastapi.responses import HTMLResponse
 from app.services.oauth2_service import oauth2_scheme
 from app.services.oauth2_service import get_current_user
 from app.models.models import *
+from app.config import settings
+import os
+import sys
 
 router = APIRouter(prefix="/users", tags=["user"])
 

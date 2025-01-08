@@ -1,8 +1,9 @@
 from pydantic_settings import BaseSettings
 from dotenv import load_dotenv
+import os
 
-#TODO loads both environments. needs to be adjusted.
-#TODO put ENV varaibles in .env
+
+
 load_dotenv(dotenv_path=".env") 
 load_dotenv(dotenv_path=".env.secret")  
 
@@ -13,7 +14,13 @@ class Settings(BaseSettings):
     debug: bool
     database_url: str
     logging_path:str
-
+    admin_name:str
+    admin_surname:str
+    admin_username:str
+    admin_email:str 
+    admin_password:str
+    admin_is_there:bool=False
+    
     secret_key: str
     database_password: str
     api_key: str

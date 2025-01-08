@@ -6,13 +6,14 @@ from typing import List
 from app.models.models import *
 from fastapi import Depends
 from sqlalchemy import and_
+from app.authorization.authorization import Authorize
 
 def create_booking(current_user_id:int,booking_schema:BookingBase,db:Session):    
 
     db_booking=BookingModel(
     checkin_date=booking_schema.checkin_date,
     checkout_date=booking_schema.checkout_date,
-    booking_status=booking_schema.booking_status,
+    booking_status=False,
     user_id=current_user_id
     )
  
@@ -24,7 +25,8 @@ def create_booking(current_user_id:int,booking_schema:BookingBase,db:Session):
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_all_bookings(db:Session)-> List[BookingModel]:       
+def get_all_bookings(user:UserModel,db:Session)-> List[BookingModel]:       
+    Authorize.is_admin(user)
     try:
        return db.query(BookingModel).all()
     except:

@@ -139,6 +139,13 @@ class UserRatingBase(BaseModel):
     rate:str
     comment:str
 
+class UserRatingUpdateBase(BaseModel):
+    id:int
+    manager_user_id:int
+    customer_user_id :int
+    rate:str
+    comment:str
+
 class UserRatingDisplay(BaseModel):
     id:int
     manager_user_id:int
