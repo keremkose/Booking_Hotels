@@ -8,9 +8,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.routers import authentication_controller
 from fastapi.staticfiles import StaticFiles
 from app.template import templates
-# from app.middlewares.admin_addition_middleware import FirstUserAdminMiddleware
 
+# from app.middlewares.admin_addition_middleware import FirstUserAdminMiddleware
 app = FastAPI()
+
 
 #authentication
 app.include_router(authentication_controller.router)

@@ -6,39 +6,51 @@ from fastapi import HTTPException,status
 from app.exceptions.user_exceptions import UserNotFound
 from fastapi.responses import HTMLResponse
 from fastapi.responses import Response
+from app.authorization.authorization import Authorize
 
 def create_user(user_schema:UserBase,db:Session):
+   
+   exists_user=db.query(UserModel).first()   
    existing_user_email=db.query(UserModel).filter(UserModel.email==user_schema.email).first()
    existing_user_username=db.query(UserModel).filter(UserModel.username==user_schema.username).first()
 
    if existing_user_email or existing_user_username is not None:
       raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)
+   
    db_user=UserModel(
     name= user_schema.name,
     surname=user_schema.surname,
     username=user_schema.username,
     email=user_schema.email,
-    password=Hash.bcrypt(user_schema.password)
+    password=Hash.bcrypt(user_schema.password),
+    is_admin=False
    )
+   if exists_user is None:
+      db_user.is_admin=True
    db.add(db_user)
    db.commit()
    db.refresh(db_user)
 
    return db_user
 
-def get_all_users(db:Session):
+def get_all_users(user,db:Session):
+   Authorize.is_admin(user)
    try:
       return db.query(UserModel).all()
    except:
       raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
    
 
-def get_user_by_id(id:str,db:Session):
+def get_user_by_id_oaut2(id:str,db:Session):
+   return db.query(UserModel).filter(UserModel.id==id).first()
+
+def get_user_by_id(id:str,db:Session,user:UserModel):
+   Authorize.is_admin(user)
    return db.query(UserModel).filter(UserModel.id==id).first()
 
 #TODO delete it 
 def admin_delete_user_by_id(id:int,db:Session,user:UserModel):
-   if user.is_admin is False:
+   if Authorize.is_admin(user) is False:
       raise HTTPException(status.HTTP_401_UNAUTHORIZED)
    try:
       hotels= db.query(HotelModel).filter(HotelModel.user_id==id)
@@ -56,9 +68,10 @@ def admin_delete_user_by_id(id:int,db:Session,user:UserModel):
    db.commit()
    return 1
 
-def delete_user_by_id(user:UserModel,db:Session):  
-  db.query(UserModel).filter(UserModel.id==user.id).filter().delete(user)
-  db.commit()
+def delete_user_by_id(user:UserModel,db:Session): 
+   db.query(UserModel).filter(UserModel.id==user.id).delete()
+   db.delete(user)
+   db.commit()
 
 def update_user_by_id(user:UserModel,user_update: UserUpdateBase, db: Session):
    db_user = db.query(UserModel).filter(UserModel.id == user.id).first()

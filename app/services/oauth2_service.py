@@ -14,7 +14,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 SECRET_KEY = settings.secret_key
 ALGORITHM = 'HS256'
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
- 
+
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
   to_encode = data.copy()
   if expires_delta:
@@ -38,7 +38,7 @@ def get_current_user(token:str=Depends(oauth2_scheme),db:Session=Depends(get_db)
       raise credential_exception
   except JWTError:
     raise credential_exception
-  user=user_database_service.get_user_by_id(id,db)
+  user=user_database_service.get_user_by_id_oaut2(id,db)
   if user is None:
     raise credential_exception
   return user

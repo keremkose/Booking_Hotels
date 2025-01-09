@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     debug: bool
     database_url: str
     logging_path:str
+    
     admin_name:str
     admin_surname:str
     admin_username:str

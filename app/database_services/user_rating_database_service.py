@@ -5,6 +5,8 @@ from typing import List
 from app.models.models import *
 from fastapi import Depends
 from sqlalchemy import and_
+from app.authorization.authorization import Authorize
+
 
 def create_user_rating(user:UserModel,user_rating_schema:UserRatingBase,db:Session):
     has_been_reviewd=db.query(UserRatingModel).filter(UserRatingModel.id==user.id)
@@ -47,9 +49,7 @@ def get_user_rating_by_id(id:int,db:Session,user: UserModel):
     return user_rating_by_id
 
 def delete_user_rating_by_id(id:int,db:Session,user:UserModel):  
-    if user.is_admin is False:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You are not authorized.")
-
+    Authorize.is_admin()
     db_user_rating=db.query(UserRatingModel).filter(and_(UserRatingModel.id==id)).first()
     try:
         db.delete(db_user_rating)
@@ -58,9 +58,7 @@ def delete_user_rating_by_id(id:int,db:Session,user:UserModel):
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
     
 def update_user_rating(user_rating_update:UserRatingUpdateBase,db: Session,user:UserModel):
-    if user.is_admin is False:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,detail="You are not authorized.")
-    
+    Authorize.is_admin()    
     db_user_rating=db.query(UserRatingModel).filter(UserRatingModel.id==user_rating_update.id).first()
     
     if db_user_rating is None:

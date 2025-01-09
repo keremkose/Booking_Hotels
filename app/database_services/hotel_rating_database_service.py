@@ -5,6 +5,7 @@ from typing import List
 from app.models.models import *
 from fastapi import Depends
 from sqlalchemy import and_
+from app.authorization.authorization import Authorize
 
 def create_hotel_rating(current_user:UserModel,hotel_rating_schema:HotelRatingBase,db:Session):    
     existing_hotel_rating=db.query(HotelRatingModel).join(HotelModel,HotelRatingModel.hotel_id==HotelModel.id).first()
@@ -14,7 +15,7 @@ def create_hotel_rating(current_user:UserModel,hotel_rating_schema:HotelRatingBa
     db_hotel_rating=HotelRatingModel(
     rate=hotel_rating_schema.rate,
     review=hotel_rating_schema.review,
-    hotel_id=hotel_rating_schema.user_id,
+    hotel_id=hotel_rating_schema.hotel_id,
     user_id=current_user.id
     )
  
@@ -26,7 +27,8 @@ def create_hotel_rating(current_user:UserModel,hotel_rating_schema:HotelRatingBa
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_all_hotel_ratings(db:Session)-> List[HotelRatingModel]:       
+def get_all_hotel_ratings(db:Session,user:UserModel):       
+    Authorize.is_admin(user)
     try:
        return db.query(HotelRatingModel).all()
     except:
@@ -46,8 +48,7 @@ def get_hotel_rating_by_id(id:int,db:Session,user:UserModel):
 
 def delete_hotel_rating_by_id(id:int,db:Session,user:UserModel):  
     db_hotel_rating=db.query(HotelRatingModel).filter(and_(HotelRatingModel.id==id,HotelRatingModel.user_id==user.id)).first()
-    if db_hotel_rating is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="There is no such an object.")
+    Authorize.is_admin()
     try:
         db.delete(db_hotel_rating)
         db.commit()
@@ -56,8 +57,7 @@ def delete_hotel_rating_by_id(id:int,db:Session,user:UserModel):
     
 def update_hotel_rating(hotel_rating_update:HotelRatingUpdateBase,db: Session,user:UserModel):
     db_hotel_rating=db.query(HotelRatingModel).filter(and_(HotelRatingModel.id==hotel_rating_update.id,HotelRatingModel.user_id==user.id)).first()
-    if db_hotel_rating is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail="There is no such an object.")
+    Authorize.is_admin()
     try:
         for field, value in hotel_rating_update.dict(exclude_unset=True).items():
             setattr(db_hotel_rating,field,value)

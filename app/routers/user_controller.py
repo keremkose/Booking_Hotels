@@ -20,17 +20,17 @@ def create_user(user: UserBase=Body(),db:Session=Depends(get_db)):
    return user_database_service.create_user(user,db)
 
 @router.get("",response_model=List[UserDisplay])
-def get_all_users(db:Session=Depends(get_db)):
-   return user_database_service.get_all_users(db)
+def admin_get_all_users(user:UserModel=Depends(get_current_user),db:Session=Depends(get_db)):
+   return user_database_service.get_all_users(user,db)
 
 @router.get("/{id}")
-def get_user_by_id(id:int,db:Session=Depends(get_db)):
-   return user_database_service.get_user_by_id(id,db)
+def admin_get_user_by_id(id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+   return user_database_service.get_user_by_id(id,db,user)
 
 #TODO delete it
 @router.delete("/{id}")
 def admin_delete_user_by_id(id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
-   user_database_service.admin_delete_user_by_id(id,db)
+   user_database_service.admin_delete_user_by_id(id,db,user)
 
 @router.delete("")
 def delete_user_by_id(user=Depends(get_current_user),db:Session=Depends(get_db)):
