@@ -16,9 +16,9 @@ def create_hotel_rating(hotel_rating_schema:HotelRatingBase,db:Session=Depends(g
     return hotel_rating_database_service.create_hotel_rating(user,hotel_rating_schema,db)
      
 #get
-@router.get("",response_model= List[HotelRatingDisplay])
-def get_all_hotel_ratings(db:Session=Depends(get_db)):
-    return hotel_rating_database_service.get_all_hotel_ratings(db)
+@router.get("")
+def get_all_hotel_ratings(db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):
+    return hotel_rating_database_service.get_all_hotel_ratings(db,user)
 
 @router.get("/{hotel_id}",response_model= List[HotelRatingDisplay])
 def get_my_all_hotel_ratings(hotel_id:int,db:Session=Depends(get_db),user:UserModel=Depends(get_current_user)):

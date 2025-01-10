@@ -51,7 +51,6 @@ class HotelDisplay(BaseModel):
 class HotelRatingBase(BaseModel):
     rate:int
     review:str
-    user_id:int
     hotel_id:int
 
 class HotelRatingUpdateBase(BaseModel):
@@ -120,6 +119,7 @@ class RoomUpdateBase(BaseModel):
     size:int|None
     bed_count:int|None
     price_per_night:int|None
+    hotel_id:int
 
 class RoomDisplay(BaseModel): 
     id:int

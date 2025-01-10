@@ -9,7 +9,8 @@ from sqlalchemy import and_
 from app.authorization.authorization import Authorize
 
 def create_booking(current_user_id:int,booking_schema:BookingBase,db:Session):    
-
+    if booking_schema.checkin_date.day >= booking_schema.checkout_date.day: 
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST)   
     db_booking=BookingModel(
     checkin_date=booking_schema.checkin_date,
     checkout_date=booking_schema.checkout_date,

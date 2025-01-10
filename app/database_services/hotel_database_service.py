@@ -41,11 +41,37 @@ def get_my_all_hotels(user:UserModel,db:Session):
     except:
         raise HTTPException(detail="There is an issue occured.",status_code=status.HTTP_503_SERVICE_UNAVAILABLE)
 
-def get_my_all_hotels(db: Session):
-    List[HotelModel]=db.query(HotelModel).all()
-    return {"Hotel":{
-        
-    }}
+def get_hotels_with_reviews(db: Session):
+
+    # hotels = db.query(HotelModel).join(HotelRatingModel,HotelRatingModel.hotel_id==HotelModel.id).filter(HotelModel.id==1).all()
+    # return hotels
+    hotels_array = []
+    hotels = db.query(HotelModel).all()
+
+    for hotel in hotels:
+        asd = db.query(HotelModel).join(HotelRatingModel,HotelRatingModel.hotel_id==hotel.id).all()
+        hotels_array.append(asd)
+        hotel_rates:List[HotelRatingModel] = db.query(HotelRatingModel).filter(HotelRatingModel.hotel_id == hotel.id).all()
+        rates_array = []
+        for rate in hotel_rates:
+            rates_array.append(
+                {
+                    "id": rate.id,
+                    "rate": rate.rate,
+                    "review": rate.review
+                }
+            )
+        hotels_array.append({
+            "id": hotel.id,
+            "hotel_name": hotel.hotel_name,
+            "description": hotel.description,
+            "address": hotel.adress,
+            "ratings": rates_array 
+        })
+    return hotels_array
+
+          
+      
 
 def get_hotel_by_id(id:int,db:Session,user:UserModel):    
     hotel=db.query(HotelModel).filter(and_(HotelModel.id==id,HotelModel.user_id==user.id)).first()

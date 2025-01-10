@@ -18,7 +18,7 @@ class UserModel(Base):
     password=Column(String)
     is_admin=Column(Boolean, default=False)
     
-    hotel_rating=relationship("HotelRatingModel",back_populates="user")
+    hotel_rating_user=relationship("HotelRatingModel",back_populates="user")
     booking=relationship("BookingModel",back_populates="user")
     hotel=relationship("HotelModel",back_populates="user")
     user_rating=relationship("UserRatingModel",back_populates="user")
@@ -56,7 +56,7 @@ class HotelModel(Base):
     adress=Column(String(max_text_length))
     user_id=Column(Integer,ForeignKey("Users.id"),nullable=False)
     
-    hotel_rating=relationship("HotelRatingModel",back_populates="hotel")
+    hotel_rating_hotel=relationship("HotelRatingModel",back_populates="hotel")
     room=relationship("RoomModel",back_populates="hotel")
     user=relationship("UserModel",back_populates="hotel")
     user_rating=relationship("UserRatingModel",back_populates="hotel")
@@ -85,8 +85,8 @@ class HotelRatingModel(Base):
     user_id=Column(Integer,ForeignKey("Users.id"),nullable=False)
     hotel_id=Column(Integer,ForeignKey("Hotels.id"),nullable=False)
     
-    user=relationship("UserModel",back_populates="hotel_rating")
-    hotel=relationship("HotelModel",back_populates="hotel_rating")
+    user=relationship("UserModel",back_populates="hotel_rating_user")
+    hotel=relationship("HotelModel",back_populates="hotel_rating_hotel")
     
       
     @validates('rate')
